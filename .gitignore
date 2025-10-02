@@ -1,0 +1,19 @@
+# Environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local debug artifacts
+debug_out/
+.idea/
+__MACOSX/
+
+# OS files
+.DS_Store
+
+# SQLite test DBs
+*.sqlite
+

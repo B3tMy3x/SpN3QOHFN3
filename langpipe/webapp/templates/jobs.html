@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Джобы</h3>
+  <table>
+    <thead><tr><th>ID</th><th>Статус</th><th>Готово</th><th>Всего</th><th>Опт.</th><th>x(job)</th><th>y(job)</th><th>z(job)</th><th>Начало</th><th>Финиш</th><th>Действия</th></tr></thead>
+    <tbody id="rows">
+      {% for j in jobs %}
+      <tr>
+        <td><a href="/jobs/view/{{ j.id }}" target="_blank">{{ j.id }}</a></td>
+        <td>{{ j.status }}</td>
+        <td>{{ j.done }}</td>
+        <td>{{ j.total }}</td>
+        <td>{{ '✓' if j.optimize else '' }}</td>
+        <td>{% if j.metrics and ('x' in j.metrics) and j.metrics['x'] is not none %}{{ '%.3f'|format(j.metrics['x']) }}{% else %}{% endif %}</td>
+        <td>{% if j.metrics and ('y' in j.metrics) and j.metrics['y'] is not none %}{{ '%.3f'|format(j.metrics['y']) }}{% else %}{% endif %}</td>
+        <td>{% if j.metrics and ('z' in j.metrics) and j.metrics['z'] is not none %}{{ '%.3f'|format(j.metrics['z']) }}{% else %}{% endif %}</td>
+        <td>{{ j.started_at }}</td>
+        <td>{{ j.finished_at or '' }}</td>
+        <td><button onclick="delJob('{{ j.id }}')">Удалить</button> <button onclick="rerunJob('{{ j.id }}')">Перезапуск</button></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted">Страница автообновляется раз в 2 сек.</p>
+</div>
+<script>
+  async function refresh(){
+    const r = await fetch('/jobs/feed');
+    const j = await r.json();
+    const rows = document.getElementById('rows');
+    rows.innerHTML = '';
+    (j.jobs||[]).forEach(it => {
+      const tr = document.createElement('tr');
+      const st = it.phase ? `${it.status} (${it.phase})` : it.status;
+      const xnum = (it.metrics && it.metrics.x!=null) ? Number(it.metrics.x) : null;
+      const ynum = (it.metrics && it.metrics.y!=null) ? Number(it.metrics.y) : null;
+      const znum = (it.metrics && it.metrics.z!=null) ? Number(it.metrics.z) : null;
+      const xcell = (xnum!=null && !isNaN(xnum)) ? xnum.toFixed(3) : '';
+      const ycell = (ynum!=null && !isNaN(ynum)) ? ynum.toFixed(3) : '';
+      const zcell = (znum!=null && !isNaN(znum)) ? znum.toFixed(3) : '';
+      const zcls = (znum==null||isNaN(znum))? '' : (znum<1? 'z-bad' : (znum>1? 'z-good' : 'z-neutral'));
+      tr.innerHTML = `<td><a href="/jobs/view/${it.id}" target="_blank">${it.id}</a></td>`+
+                     `<td>${st}</td>`+
+                     `<td>${it.done||0}</td>`+
+                     `<td>${it.total||0}</td>`+
+                     `<td>${it.optimize? '✓' : ''}</td>`+
+                     `<td>${xcell}</td>`+
+                     `<td>${ycell}</td>`+
+                     `<td><span class="${zcls}">${zcell}</span></td>`+
+                     `<td>${it.started_at||''}</td>`+
+                     `<td>${it.finished_at||''}</td>`+
+                     `<td><button onclick="delJob('${it.id}')">Удалить</button> <button onclick="rerunJob('${it.id}')">Перезапуск</button></td>`;
+      rows.appendChild(tr);
+    });
+    setTimeout(refresh, 2000);
+  }
+  async function delJob(id){
+    await fetch(`/jobs/${id}`, { method: 'DELETE' });
+    await refresh();
+  }
+  async function rerunJob(id){
+    const form = new FormData();
+    form.append('optimize', 'true');
+    const r = await fetch(`/jobs/${id}/rerun`, { method: 'POST', body: form });
+    const j = await r.json();
+    if(j.job_id){ window.open(`/jobs/view/${j.job_id}`, '_blank'); }
+  }
+  window.addEventListener('DOMContentLoaded', refresh);
+  </script>
+{% endblock %}

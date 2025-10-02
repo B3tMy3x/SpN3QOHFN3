@@ -1,0 +1,208 @@
+{
+  "url":"jdbc:trino://trino.czxqx2r9.data.bizmrg.com:443?user=hackuser&password=dovq(ozaq8ngt)oS",    
+  "ddl": [
+    {
+      "statement": "CREATE TABLE quests.public.h_author ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_category ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_client ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_episode ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_episode_completion ( id integer, completion_id varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_excursion ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_payment ( id integer, description varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_promo ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_quest ( id integer, name varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_review ( id integer, text varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.h_session ( id integer, session_id varchar, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_author_quest ( quest_id integer, author_id integer ) WITH ( format = 'PARQUET', format_version = 2);"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_client_episode_completion ( client_id integer, completion_id varchar, episode_id integer, completed_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_client_review ( client_id integer, review_id integer, created_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2);"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_client_session ( client_id integer, session_id varchar, start_time timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_excursion_author ( excursion_id integer, author_id integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_excursion_category ( excursion_id integer, category_id integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_excursion_payment ( excursion_id integer, payment_id integer, payment_dt timestamp(6), channel varchar, device_type varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_excursion_review ( excursion_id integer, review_id integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_payment_client ( client_id integer, payment_id integer, payment_dt timestamp(6), channel varchar, device_type varchar, is_repeat_purchase varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_payment_promo ( payment_id integer, promo_id integer, applied_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_quest_category ( quest_id integer, category_id integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_quest_episode ( quest_id integer, episode_id integer, bind_at timestamp(6) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_quest_payment ( quest_id integer, payment_id integer, payment_dt timestamp(6), channel varchar, device_type varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.l_quest_review ( quest_id integer, review_id integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.ref_categories ( category varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.ref_cities ( city varchar, region varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.ref_genres ( genre varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.ref_loyalty_levels ( level varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.ref_professions ( profession varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.ref_sources ( source varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_author_geo_info ( author_id integer, city varchar, region varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_author_personal_info ( author_id integer, gender varchar, age integer ) WITH ( format = 'PARQUET', format_version = 2);"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_category_info ( category_id integer, description varchar, parent_category_id integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_client_geo_info ( client_id integer, city varchar, region varchar, info varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_client_personal_info ( client_id integer, name varchar, gender varchar, age integer, profession varchar, registration_date date, loyalty_points integer, loyalty_level varchar, registration_source varchar, first_purchase_date date ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_episode_completion_info ( completion_id varchar, client_id integer, episode_id integer, completion_date date, time_spent decimal(8, 2) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_episode_info ( episode_id integer, duration integer, text varchar, completion_count integer, avg_completion_time decimal(8, 2) ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_excursion_geo_info ( excursion_id integer, city varchar, region varchar, language varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_excursion_info ( excursion_id integer, name varchar, description varchar, duration integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_payment_info ( payment_id integer, amount decimal(10, 2), currency varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_promo_info ( promo_id integer, discount_percent integer, start_date date, end_date date, promo_code varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_quest_info ( quest_id integer, duration integer, genre varchar, language varchar, category varchar, episodes_count integer ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_review_info ( review_id integer, rating integer, text varchar, review_date date ) WITH ( format = 'PARQUET', format_version = 2 );"
+    },
+    {
+      "statement": "CREATE TABLE quests.public.s_session_info ( session_id varchar, duration integer, pages_viewed integer, device_info varchar ) WITH ( format = 'PARQUET', format_version = 2 );"
+    }
+  ],
+  "queries": [
+    {
+      "queryid": "27a8890e-63d2-4078-a412-00ed39604ffc",
+      "query": "SELECT scg.region, date_trunc('month', pc.payment_dt) AS month, 'Excursion' AS product_type, COUNT(*) AS sales_count FROM quests.public.l_excursion_payment ep JOIN quests.public.l_payment_client pc ON ep.payment_id = pc.payment_id JOIN quests.public.h_client c ON pc.client_id = c.id JOIN quests.public.s_client_geo_info scg ON c.id = scg.client_id GROUP BY scg.region, date_trunc('month', pc.payment_dt) UNION ALL SELECT scg.region, date_trunc('month', pc.payment_dt) AS month, 'Quest' AS product_type, COUNT(*) AS sales_count FROM quests.public.l_quest_payment qp JOIN quests.public.l_payment_client pc ON qp.payment_id = pc.payment_id JOIN quests.public.h_client c ON pc.client_id = c.id JOIN quests.public.s_client_geo_info scg ON c.id = scg.client_id GROUP BY scg.region, date_trunc('month', pc.payment_dt) ORDER BY region, month;",
+      "runquantity": 235,
+      "executiontime":12      
+    },
+    {
+      "queryid": "9af46d13-0ef4-4352-9a4c-1a400fcb8878",
+      "query": "SELECT CASE WHEN sci.age < 25 THEN '18-24' WHEN sci.age < 35 THEN '25-34' WHEN sci.age < 45 THEN '35-44' ELSE '45+' END AS age_group, COUNT(ep.excursion_id) AS excursion_purchases, COUNT(qp.quest_id) AS quest_purchases FROM quests.public.s_client_personal_info sci JOIN quests.public.l_payment_client pc ON sci.client_id = pc.client_id LEFT JOIN quests.public.l_excursion_payment ep ON pc.payment_id = ep.payment_id LEFT JOIN quests.public.l_quest_payment qp ON pc.payment_id = qp.payment_id GROUP BY CASE WHEN sci.age < 25 THEN '18-24' WHEN sci.age < 35 THEN '25-34' WHEN sci.age < 45 THEN '35-44' ELSE '45+' END ORDER BY COUNT(ep.excursion_id) + COUNT(qp.quest_id) DESC;",
+      "runquantity": 2432,
+      "executiontime":12
+    },
+    {
+      "queryid": "dad15399-09ce-465e-b9e3-1712457e00c3",
+      "query": "SELECT sci.registration_source, COUNT(*) AS registered_users, COUNT(sci.first_purchase_date) AS buyers, ROUND(COUNT(sci.first_purchase_date) * 100.0 / COUNT(*), 2) AS conversion_rate FROM quests.public.s_client_personal_info sci GROUP BY sci.registration_source ORDER BY conversion_rate DESC;",
+      "runquantity": 758,
+      "executiontime": 1      
+    },
+    {
+      "queryid": "15021609-4e0c-48fd-98e4-1e54bfe651cf",
+      "query": "WITH base AS (SELECT sci.registration_source, scg.region, date_trunc('month', hc.created_at) AS month, COUNT(*) AS registered_users, COUNT(IF(sci.first_purchase_date IS NOT NULL, 1, NULL)) AS buyers FROM quests.public.s_client_personal_info sci JOIN quests.public.h_client hc ON hc.id = sci.client_id JOIN quests.public.s_client_geo_info scg ON scg.client_id = sci.client_id JOIN quests.public.h_client hc2 ON hc2.id = sci.client_id CROSS JOIN (SELECT * FROM quests.public.h_client ORDER BY random() LIMIT 10) junk GROUP BY sci.registration_source, scg.region, date_trunc('month', hc.created_at)) , big AS (SELECT * FROM base UNION ALL SELECT * FROM base UNION ALL SELECT * FROM base UNION ALL SELECT * FROM base) , calc AS (SELECT registration_source, region, month, registered_users, buyers, (SELECT AVG(registered_users) FROM big b2 WHERE b2.region = b1.region) AS avg_reg, (SELECT MAX(buyers) FROM big b3 WHERE b3.registration_source = b1.registration_source) AS max_buy, ROW_NUMBER() OVER (PARTITION BY registration_source, region ORDER BY month) AS rn FROM big b1) SELECT registration_source, region, month, registered_users, buyers, ROUND(buyers * 100.0 / NULLIF(registered_users, 0), 2) AS conversion_rate, avg_reg, max_buy FROM calc WHERE rn < 50 ORDER BY random();",
+      "runquantity": 88,
+      "executiontime": 3      
+    },
+    {
+      "queryid": "28f3379d-9b67-4c1f-90f1-b8ee3e3fab52",
+      "query": "WITH sales_by_period AS ( SELECT segi.language, scg.city, CASE WHEN date_trunc('quarter', pc.payment_dt) = TIMESTAMP '2024-01-01' THEN 'Q1' WHEN date_trunc('quarter', pc.payment_dt) = TIMESTAMP '2024-04-01' THEN 'Q2' END AS quarter, COUNT(*) AS sales_count FROM quests.public.l_excursion_payment ep JOIN quests.public.l_payment_client pc ON ep.payment_id = pc.payment_id JOIN quests.public.s_excursion_geo_info segi ON ep.excursion_id = segi.excursion_id JOIN quests.public.h_client c ON pc.client_id = c.id JOIN quests.public.s_client_geo_info scg ON c.id = scg.client_id WHERE pc.payment_dt >= TIMESTAMP '2024-01-01' GROUP BY segi.language, scg.city, date_trunc('quarter', pc.payment_dt) ), quarterly_sales AS ( SELECT language, city, COALESCE(MAX(CASE WHEN quarter = 'Q1' THEN sales_count END), 0) AS q1_sales, COALESCE(MAX(CASE WHEN quarter = 'Q2' THEN sales_count END), 0) AS q2_sales FROM sales_by_period GROUP BY language, city ) SELECT language, city, q1_sales, q2_sales, ROUND((q2_sales - q1_sales) * 100.0 / NULLIF(q1_sales, 0), 2) AS growth_rate FROM quarterly_sales WHERE q1_sales > 0 ORDER BY growth_rate DESC LIMIT 10;",
+      "runquantity": 12,
+      "executiontime":14      
+    },
+    {
+      "queryid": "3b1cc90f-d446-4592-becd-8c26efbabf56",
+      "query": "WITH raw_data AS (SELECT ha.id AS author_id, ha.name AS author_name, ep.excursion_id, qp.quest_id, ei.amount AS exc_amount, qi.amount AS quest_amount FROM quests.public.h_author ha LEFT JOIN quests.public.l_excursion_author ea ON ha.id = ea.author_id LEFT JOIN quests.public.l_excursion_payment ep ON ea.excursion_id = ep.excursion_id LEFT JOIN quests.public.s_payment_info ei ON ep.payment_id = ei.payment_id LEFT JOIN quests.public.l_author_quest aq ON ha.id = aq.author_id LEFT JOIN quests.public.l_quest_payment qp ON aq.quest_id = qp.quest_id LEFT JOIN quests.public.s_payment_info qi ON qp.payment_id = qi.payment_id LIMIT 500000), dup AS (SELECT r.*, x.n AS mult FROM raw_data r CROSS JOIN (VALUES 1,2) AS x(n)), calc AS (SELECT author_id, author_name, COUNT(excursion_id) + COUNT(quest_id) AS total_sales, COALESCE(SUM(exc_amount),0) + COALESCE(SUM(quest_amount),0) AS total_revenue, ROW_NUMBER() OVER (PARTITION BY author_id ORDER BY random()) AS rn, AVG(exc_amount) OVER (PARTITION BY author_id) AS avg_exc, MAX(quest_amount) OVER (PARTITION BY author_id) AS max_quest FROM dup GROUP BY author_id, author_name, excursion_id, quest_id, exc_amount, quest_amount) SELECT author_id, author_name, total_sales, total_revenue, avg_exc, max_quest FROM calc WHERE rn < 500 ORDER BY random();",
+      "runquantity": 44,
+      "executiontime": 25
+    },
+    {
+      "queryid": "dfcc8c65-1871-434d-a9de-fa31d0b7a59f",
+      "query": "SELECT CASE WHEN purchase_count = 1 THEN 'Одноразовые' WHEN purchase_count BETWEEN 2 AND 5 THEN '2-5 покупок' WHEN purchase_count BETWEEN 6 AND 10 THEN '6-10 покупок' ELSE '10+ покупок' END AS purchase_segment, COUNT(*) AS client_count, AVG(purchase_count) AS avg_purchases FROM ( SELECT client_id, COUNT(*) AS purchase_count FROM quests.public.l_payment_client GROUP BY client_id ) t GROUP BY CASE WHEN purchase_count = 1 THEN 'Одноразовые' WHEN purchase_count BETWEEN 2 AND 5 THEN '2-5 покупок' WHEN purchase_count BETWEEN 6 AND 10 THEN '6-10 покупок' ELSE '10+ покупок' END ORDER BY client_count DESC;",
+      "runquantity": 12,
+      "executiontime":1
+    },
+    {
+      "queryid": "37a91112-1ccd-44a8-b150-a9cc4c76fc5f",
+      "query": "SELECT sci.loyalty_level, COUNT(*) AS total_clients, COUNT(IF(pc.is_repeat_purchase = 'Y', 1, NULL)) AS repeat_buyers, ROUND(COUNT(IF(pc.is_repeat_purchase = 'Y', 1, NULL)) * 100.0 / COUNT(*), 2) AS repeat_rate, ROUND(AVG(pi.amount), 2) AS avg_check FROM quests.public.s_client_personal_info sci JOIN quests.public.l_payment_client pc ON sci.client_id = pc.client_id JOIN quests.public.s_payment_info pi ON pc.payment_id = pi.payment_id GROUP BY sci.loyalty_level ORDER BY repeat_rate DESC;",
+      "runquantity": 32,
+      "executiontime":10
+    },
+    {
+      "queryid": "ee06b54f-5c53-4f4b-90ea-bf36ffe517cd",
+      "query": "SELECT c.name AS category, COUNT(*) AS sales, ROUND(AVG(pi.amount), 2) AS avg_check FROM quests.public.l_excursion_payment ep JOIN quests.public.l_excursion_category ec ON ep.excursion_id = ec.excursion_id JOIN quests.public.h_category c ON ec.category_id = c.id JOIN quests.public.s_payment_info pi ON ep.payment_id = pi.payment_id GROUP BY c.name UNION ALL SELECT c.name AS category, COUNT(*) AS sales, ROUND(AVG(pi.amount), 2) AS avg_check FROM quests.public.l_quest_payment qp JOIN quests.public.l_quest_category qc ON qp.quest_id = qc.quest_id JOIN quests.public.h_category c ON qc.category_id = c.id JOIN quests.public.s_payment_info pi ON qp.payment_id = pi.payment_id GROUP BY c.name ORDER BY avg_check DESC;",
+      "runquantity": 278,
+      "executiontime":12      
+    },
+    {
+      "queryid": "724dad7d-4263-4a03-a71e-34f977455713",
+      "query": "SELECT he.name AS episode_name, hq.name AS quest_name, COUNT(*) AS completions, AVG(seci.time_spent) AS avg_time_minutes, COUNT(DISTINCT seci.client_id) AS unique_users FROM quests.public.h_episode he JOIN quests.public.s_episode_completion_info seci ON he.id = seci.episode_id JOIN quests.public.l_quest_episode lqe ON he.id = lqe.episode_id JOIN quests.public.h_quest hq ON lqe.quest_id = hq.id GROUP BY he.id, he.name, hq.name ORDER BY completions DESC LIMIT 10;",
+      "runquantity": 559,
+      "executiontime":8
+    },
+    {
+      "queryid": "40122a54-5caa-4e1e-9866-90abfa9472d6",
+      "query": "SELECT date_trunc('month', pc.payment_dt) AS month, COUNT(*) AS total_sales, COUNT(pp.promo_id) AS promo_sales, SUM(pi.amount) AS total_revenue, ROUND(AVG(IF(pp.promo_id IS NOT NULL, pi.amount, NULL)), 2) AS avg_check_promo, ROUND(AVG(IF(pp.promo_id IS NULL, pi.amount, NULL)), 2) AS avg_check_regular FROM quests.public.l_payment_client pc JOIN quests.public.s_payment_info pi ON pc.payment_id = pi.payment_id LEFT JOIN quests.public.l_payment_promo pp ON pc.payment_id = pp.payment_id GROUP BY date_trunc('month', pc.payment_dt) ORDER BY date_trunc('month', pc.payment_dt);",
+      "runquantity": 34,
+      "executiontime":10      
+    }
+  ]
+}

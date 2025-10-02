@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col card">
+    <h3>Пара запросов (по очереди)</h3>
+    <textarea id="sql1" placeholder="Первый SELECT ..."></textarea>
+    <textarea id="sql2" placeholder="Второй SELECT ..."></textarea>
+    <button id="btn" onclick="runPair()">Сравнить</button>
+    <div id="status" class="muted"></div>
+  </div>
+  <div class="col card">
+    <h3>Результат</h3>
+    <pre id="out"></pre>
+  </div>
+</div>
+<script>
+  function $(id){return document.getElementById(id);} 
+  async function runPair(){
+    const f=new FormData();
+    f.append('sql1',$('sql1').value);
+    f.append('sql2',$('sql2').value);
+    $('btn').disabled=true; $('status').textContent='Выполняется…';
+    const r=await fetch('/run/pair',{method:'POST',body:f});
+    const j=await r.json();
+    $('out').textContent=JSON.stringify(j,null,2);
+    $('btn').disabled=false; $('status').textContent='Готово';
+    if(j.job_id){ pollJob(j.job_id); }
+  }
+  async function pollJob(id){
+    const r=await fetch(`/jobs/${id}`);
+    if(r.status!==200) return;
+    const j=await r.json();
+    const done=j.done||0, total=j.total||0, st=j.status||'';
+    $('status').textContent = `Статус: ${st} (${done}/${total})`;
+    if(st!=='finished') setTimeout(()=>pollJob(id), 800);
+  }
+</script>
+{% endblock %}

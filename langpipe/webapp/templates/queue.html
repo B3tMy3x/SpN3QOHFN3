@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col card">
+    <h3>Очередь запросов</h3>
+    <div>Лимит: <input id="limit" placeholder="0 = все" /></div>
+    <div>
+      <button onclick="loadPredefined('flights')">Загрузить flights.json</button>
+      <button onclick="loadPredefined('questsH')">Загрузить questsH.json</button>
+    </div>
+    <div>Или загрузить JSON: <input id="jsonfile" type="file" accept="application/json" onchange="uploadJson(event)" /></div>
+    <div id="queue_count" class="muted"></div>
+    <textarea id="queue" placeholder='["SELECT ...", ...]'></textarea>
+    <label><input type="checkbox" id="q_optimize" checked /> Сравнивать с оптимизированным</label>
+    <button onclick="runQueue()">Запустить очередь</button>
+    <div id="job" class="muted"></div>
+  </div>
+  <div class="col card">
+    <h3>Прогресс</h3>
+    <pre id="progress"></pre>
+  </div>
+</div>
+<script>
+  function $(id){return document.getElementById(id);} 
+  async function loadPredefined(name){const limit=parseInt($('limit').value||'0',10);const r=await fetch(`/queues/predefined?name=${encodeURIComponent(name)}&limit=${limit}`);const j=await r.json();$('queue').value=JSON.stringify(j.queries||[],null,2);$('queue_count').textContent=`Loaded ${j.count||0} queries.`;} 
+  async function uploadJson(){const f=$('jsonfile').files[0];if(!f) return;const form=new FormData();form.append('file',f);form.append('limit',$('limit').value||'0');const r=await fetch('/queues/upload',{method:'POST',body:form});const j=await r.json();$('queue').value=JSON.stringify(j.queries||[],null,2);$('queue_count').textContent=`Loaded ${j.count||0} queries.`;} 
+  async function runQueue(){let queries;try{queries=JSON.parse($('queue').value||'[]');}catch{alert('Invalid queries JSON');return;}const form=new FormData();form.append('queries',JSON.stringify(queries));form.append('optimize',$('q_optimize').checked?'true':'false');const r=await fetch('/queues/run',{method:'POST',body:form});const j=await r.json();$('job').textContent=`Job: ${j.job_id}`;pollJob(j.job_id);} 
+  async function pollJob(id){const r=await fetch(`/jobs/${id}`);const j=await r.json();$('progress').textContent=JSON.stringify(j,null,2);if(j.status==='finished') return;setTimeout(()=>pollJob(id),1000);} 
+</script>
+{% endblock %}
+
