@@ -1,21 +1,27 @@
+# VCS
 .git
 .gitignore
-.DS_Store
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.sqlite
-*.log
-debug_out/
-venv/
-.venv/
-__MACOSX/
-*.ipynb
-*.parquet
-*.csv
-*.tsv
-*.gz
-*.zip
-*.whl
 
+# Local env/OS files
+.env
+.env.*
+.DS_Store
+
+# Python caches
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# Editors/IDEs
+.vscode/
+.idea/
+
+# Virtual envs
+.venv/
+venv/
+
+# Notebooks and large artifacts
+*.ipynb
+notebook_code_dump.py
+final.json
+trash/

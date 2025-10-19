@@ -1,19 +1,50 @@
-# Environments
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+*.log
+
+# Environments / secrets
+.env
+.env.*
+.envrc
 .venv/
 venv/
+.python-version
 
-# Python cache
-__pycache__/
-*.pyc
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+coverage.*
+.coverage
+htmlcov/
 
-# Local debug artifacts
-debug_out/
+# Editors/IDEs
+.vscode/
 .idea/
-__MACOSX/
 
-# OS files
-.DS_Store
+# Build artifacts
+build/
+dist/
+site/
 
-# SQLite test DBs
-*.sqlite
+# Jupyter
+.ipynb_checkpoints/
+notebook_code_dump.py
 
+# Project-specific
+final.json
+trash/
+
+# Docker/Compose local overrides
+docker-compose.override.yml

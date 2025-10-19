@@ -1,0 +1,100 @@
+{
+    "url":"jdbc:trino://trino.fjwgzjqf.data.bizmrg.com:443?user=hackuser&password=dovq(ozaq8ngt)oS",
+    "ddl":[
+        {
+            "statement": "CREATE TABLE githubevents.data.github_events ( file_time timestamp(6), event_type varchar, actor_login varchar, repo_name varchar, created_at timestamp(6), updated_at timestamp(6), action varchar, comment_id bigint, body varchar, path varchar, position integer, line integer, ref varchar, ref_type varchar, creator_user_login varchar, number integer, title varchar, state varchar, locked integer, assignee varchar, comments integer, author_association varchar, closed_at timestamp(6), merged_at timestamp(6), merge_commit_sha varchar, head_ref varchar, head_sha varchar, base_ref varchar, base_sha varchar, merged integer, mergeable integer, rebaseable integer, mergeable_state varchar, merged_by varchar, review_comments integer, maintainer_can_modify integer, commits integer, additions integer, deletions integer, changed_files integer, diff_hunk varchar, original_position integer, commit_id varchar, original_commit_id varchar, push_size integer, push_distinct_size integer, member_login varchar, release_tag_name varchar, release_name varchar, review_state varchar ) WITH ( format = 'PARQUET' )"
+        }
+     ],
+    "queries": [
+        {
+            "queryid":"e00f70c3-44ce-4c2b-873d-a357dfbe04d6",
+            "query":"WITH yearly_data AS ( SELECT repo_name, created_at, YEAR(created_at) AS year FROM githubevents.data.github_events WHERE event_type = 'WatchEvent' ) SELECT repo_name, SUM(CASE WHEN year = 2020 THEN 1 ELSE 0 END) AS stars2020, SUM(CASE WHEN year = 2019 THEN 1 ELSE 0 END) AS stars2019, ROUND(CAST(SUM(CASE WHEN year = 2020 THEN 1 ELSE 0 END) AS DOUBLE) / SUM(CASE WHEN year = 2019 THEN 1 ELSE 0 END), 3) AS yoy, MIN(created_at) AS first_seen FROM yearly_data GROUP BY repo_name HAVING (MIN(created_at) <= TIMESTAMP '2019-01-01 00:00:00') AND (SUM(CASE WHEN year = 2019 THEN 1 ELSE 0 END) >= 1000) ORDER BY yoy DESC LIMIT 50",
+            "runquantity":381,
+            "executiontime":12
+        },
+        {
+            "queryid":"76d0e04d-ee49-4da9-a28d-0a86a55df4d6",
+            "query":"SELECT repo_name, MAX(stars) AS daily_stars, SUM(stars) AS total_stars, CAST(SUM(stars) AS DOUBLE) / MAX(stars) AS rate FROM ( SELECT repo_name, CAST(created_at AS DATE) AS day, COUNT(*) AS stars FROM githubevents.data.github_events WHERE event_type = 'WatchEvent' GROUP BY repo_name, CAST(created_at AS DATE) ) GROUP BY repo_name ORDER BY rate DESC LIMIT 50",
+            "runquantity":367,
+            "executiontime":43
+        },
+        {
+            "queryid":"cbee4d3f-8da3-4c33-a59c-ca811d9bf0dd",
+            "query":"SELECT repo_name, count() FROM githubevents.data.github_events WHERE (event_type = 'WatchEvent') AND (actor_login IN ( SELECT actor_login FROM githubevents.data.github_events WHERE (event_type = 'PullRequestEvent') AND (action = 'opened') )) GROUP BY repo_name ORDER BY count() DESC LIMIT 50",
+            "runquantity":787,
+            "executiontime":24
+        },
+        {
+            "queryid":"624c52c7-be27-4bac-a297-2b14aa12ddc0",
+            "query":"SELECT repo_name, SUM(CASE WHEN event_type = 'IssuesEvent' AND action = 'opened' THEN 1 ELSE 0 END) AS c, COUNT(DISTINCT CASE WHEN event_type = 'IssuesEvent' AND action = 'opened' THEN actor_login END) AS u, SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) AS stars FROM githubevents.data.github_events WHERE event_type IN ('IssuesEvent', 'WatchEvent') GROUP BY repo_name HAVING SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) >= 1000 ORDER BY c DESC LIMIT 50",
+            "runquantity":1447,
+            "executiontime":27
+        },
+        {
+            "queryid":"24b12362-6d34-4aec-8a41-1ea1b2c2950c",
+            "query":"SELECT repo_name, COUNT(DISTINCT CASE WHEN (event_type = 'PushEvent') AND regexp_like(ref, '/(main|master)$') THEN actor_login END) AS u, SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) AS stars FROM githubevents.data.github_events WHERE (event_type IN ('PushEvent', 'WatchEvent')) AND (repo_name != '/') GROUP BY repo_name ORDER BY u DESC LIMIT 50",
+            "runquantity":124,
+            "executiontime":42
+        },
+        {
+            "queryid":"9abc1f7a-49db-40af-a856-658633c104f2",
+            "query":"SELECT repo_name, SUM(CASE WHEN event_type = 'MemberEvent' THEN 1 ELSE 0 END) AS invitations, SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) AS stars FROM githubevents.data.github_events WHERE event_type IN ('MemberEvent', 'WatchEvent') GROUP BY repo_name HAVING SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) >= 100 ORDER BY invitations DESC LIMIT 50",
+            "runquantity":1245,
+            "executiontime":9
+        },
+        {
+            "queryid":"c34faa46-99a0-4db5-a911-1e5549e3368f",
+            "query":"SELECT SUM(stars) AS stars, SUM(forks) AS forks, ROUND(CAST(SUM(stars) AS DOUBLE) / SUM(forks), 2) AS ratio FROM ( SELECT SUM(CASE WHEN event_type = 'ForkEvent' THEN 1 ELSE 0 END) AS forks, SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) AS stars FROM githubevents.data.github_events WHERE event_type IN ('ForkEvent', 'WatchEvent') GROUP BY repo_name HAVING SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) > 100 )",
+            "runquantity":54,
+            "executiontime":9
+        },
+        {
+            "queryid":"b3d2d0dd-6079-40eb-b5b9-f14439f3c7c7",
+            "query":"SELECT 'https://github.com/' || repo_name || '/issues/' || CAST(number AS VARCHAR) AS URL, MAX(comments) AS max_comments, MAX_BY(authors, comments) AS authors, MAX_BY(number, comments) AS number, SUM(stars) AS stars FROM ( SELECT * FROM ( SELECT repo_name, number, COUNT(*) AS comments, COUNT(DISTINCT actor_login) AS authors FROM githubevents.data.github_events WHERE (event_type = 'IssueCommentEvent') AND (action = 'created') AND (number > 10) GROUP BY repo_name, number HAVING COUNT(DISTINCT actor_login) >= 10 ) AS t1 INNER JOIN ( SELECT repo_name, COUNT(*) AS stars FROM githubevents.data.github_events WHERE event_type = 'WatchEvent' GROUP BY repo_name HAVING COUNT(*) > 10000 ) AS t2 USING (repo_name) ) GROUP BY repo_name, number ORDER BY stars DESC LIMIT 50",
+            "runquantity":1174,
+            "executiontime":22
+        },
+        {
+            "queryid":"94cc8250-9538-4312-901d-e7e4837a7184",
+            "query":"SELECT actor_login, SUM(CASE WHEN event_type = 'PushEvent' THEN 1 ELSE 0 END) AS c, COUNT(DISTINCT CASE WHEN event_type = 'PushEvent' THEN repo_name END) AS repos, SUM(CASE WHEN event_type = 'IssuesEvent' THEN 1 ELSE 0 END) AS issues, SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) AS stars, APPROX_DISTINCT(repo_name) AS any_heavy_repo FROM githubevents.data.github_events WHERE (event_type IN ('PushEvent', 'IssuesEvent', 'WatchEvent')) AND (repo_name IN ( SELECT repo_name FROM githubevents.data.github_events WHERE event_type = 'WatchEvent' GROUP BY repo_name ORDER BY COUNT(*) DESC LIMIT 10000 )) GROUP BY actor_login HAVING (COUNT(DISTINCT CASE WHEN event_type = 'PushEvent' THEN repo_name END) < 10000) AND (SUM(CASE WHEN event_type = 'IssuesEvent' THEN 1 ELSE 0 END) > 1) AND (SUM(CASE WHEN event_type = 'WatchEvent' THEN 1 ELSE 0 END) > 1) ORDER BY c DESC LIMIT 50",
+            "runquantity":447,
+            "executiontime":63
+        },
+        {
+            "queryid":"70e1055a-5f61-489b-944f-cebe7c00b0a4",
+            "query":"SELECT LOWER(SUBSTRING(repo_name, 1, POSITION('/' IN repo_name) - 1)) AS org, COUNT(DISTINCT actor_login) AS authors, COUNT(DISTINCT CASE WHEN event_type = 'PullRequestEvent' THEN actor_login END) AS pr_authors, COUNT(DISTINCT CASE WHEN event_type = 'IssuesEvent' THEN actor_login END) AS issue_authors, COUNT(DISTINCT CASE WHEN event_type = 'IssueCommentEvent' THEN actor_login END) AS comment_authors, COUNT(DISTINCT CASE WHEN event_type = 'PullRequestReviewCommentEvent' THEN actor_login END) AS review_authors, COUNT(DISTINCT CASE WHEN event_type = 'PushEvent' THEN actor_login END) AS push_authors FROM githubevents.data.github_events WHERE event_type IN ('PullRequestEvent', 'IssuesEvent', 'IssueCommentEvent', 'PullRequestReviewCommentEvent', 'PushEvent') GROUP BY LOWER(SUBSTRING(repo_name, 1, POSITION('/' IN repo_name) - 1)) ORDER BY authors DESC LIMIT 50",
+            "runquantity":244,
+            "executiontime":71
+        },
+        {
+            "queryid":"08e31d3c-fe07-433c-af25-be22f931ff3f",
+            "query":"SELECT repo_name, COUNT(*) AS prs, COUNT(DISTINCT actor_login) AS authors, SUM(additions) AS adds, SUM(deletions) AS dels FROM githubevents.data.github_events WHERE (event_type = 'PullRequestEvent') AND (action = 'opened') AND (additions < 10000) AND (deletions < 10000) AND deletions > 0 -- Prevent division by zero at row level GROUP BY repo_name HAVING (SUM(additions) * 1.0 / SUM(deletions)) < 10 ORDER BY SUM(additions) + SUM(deletions) DESC LIMIT 50",
+            "runquantity":2471,
+            "executiontime":12
+        },
+        {
+            "queryid":"f1a06896-595f-4c6a-9cc7-1c021b70ab71",
+            "query":"SELECT repo_name, COUNT(*) AS pushes, COUNT(DISTINCT actor_login) AS authors FROM githubevents.data.github_events WHERE (event_type = 'PushEvent') AND (repo_name IN ( SELECT repo_name FROM githubevents.data.github_events WHERE event_type = 'WatchEvent' GROUP BY repo_name ORDER BY COUNT(*) DESC LIMIT 10000 )) GROUP BY repo_name ORDER BY COUNT(*) DESC LIMIT 50",
+            "runquantity":344,
+            "executiontime":16
+        },
+        {
+            "queryid":"7f3f0cba-c8ac-4849-af6c-bd6f031b24d6",
+            "query":"SELECT actor_login, COUNT(*) AS count, COUNT(DISTINCT repo_name) AS repos, COUNT(DISTINCT CAST(repo_name AS VARCHAR) || '_' || CAST(number AS VARCHAR)) AS prs, REGEXP_REPLACE(SUBSTRING(CAST(MAX_BY(body, LENGTH(body)) AS VARCHAR), 1, 100), '[\r\n]', ' ') AS comment FROM githubevents.data.github_events WHERE (event_type = 'PullRequestReviewCommentEvent') AND (action = 'created') GROUP BY actor_login ORDER BY COUNT(*) DESC LIMIT 50",
+            "runquantity":644,
+            "executiontime":26
+        },
+        {
+            "queryid":"2eec0acd-d1b1-4d0f-af5d-111eee59a63d",
+            "query":"WITH opened_events AS ( SELECT actor_login, author_association, COUNT(*) AS opened_count FROM githubevents.data.githubevents.data.github_events WHERE event_type IN ('IssuesEvent', 'PullRequestEvent') AND action IN ('opened', 'created') -- Covers PR creation and issue opening AND actor_login IS NOT NULL AND actor_login NOT LIKE '%[bot]%' -- Optional: filter out known bots AND actor_login NOT IN ('dependabot', 'dependabot[bot]', 'github-actions', 'github-actions[bot]') -- Optional GROUP BY actor_login, author_association ), assigned_events AS ( SELECT assignee AS actor_login, COUNT(*) AS assigned_count FROM githubevents.data.githubevents.data.github_events WHERE event_type IN ('IssuesEvent', 'PullRequestEvent') AND assignee IS NOT NULL AND assignee NOT LIKE '%[bot]%' AND assignee NOT IN ('dependabot', 'dependabot[bot]', 'github-actions', 'github-actions[bot]') GROUP BY assignee ) SELECT o.actor_login, o.author_association, o.opened_count, COALESCE(a.assigned_count, 0) AS assigned_count, ROUND( CAST(o.opened_count AS DOUBLE) / NULLIF(COALESCE(a.assigned_count, 0), 0), 2 ) AS open_to_assigned_ratio FROM opened_events o LEFT JOIN assigned_events a ON o.actor_login = a.actor_login WHERE o.opened_count >= 5 -- Only users who opened at least 5 issues/PRs ORDER BY open_to_assigned_ratio DESC, o.opened_count DESC LIMIT 100;",
+            "runquantity":177,
+            "executiontime":36
+        },
+        {
+            "queryid":"8f2efbb2-741b-4b93-8682-56b7fb4f8a19",
+            "query":"WITH pr_merges AS ( SELECT merged_by, COUNT(*) AS prs_merged_count FROM githubevents.data.githubevents.data.github_events WHERE event_type = 'PullRequestEvent' AND action = 'closed' AND merged_by IS NOT NULL AND merged = 1 -- Ensures it was actually merged AND merged_by NOT LIKE '%[bot]%' AND merged_by NOT IN ('dependabot[bot]', 'github-actions[bot]') GROUP BY merged_by ), code_reviews AS ( SELECT actor_login AS reviewer, COUNT(*) AS reviews_submitted_count FROM githubevents.data.githubevents.data.github_events WHERE event_type = 'PullRequestReviewEvent' AND review_state IN ('approved', 'commented', 'changes_requested') -- All review actions AND actor_login IS NOT NULL AND actor_login NOT LIKE '%[bot]%' AND actor_login NOT IN ('dependabot[bot]', 'github-actions[bot]') GROUP BY actor_login ) SELECT m.merged_by AS maintainer, m.prs_merged_count, COALESCE(r.reviews_submitted_count, 0) AS reviews_submitted_count, ROUND( COALESCE(r.reviews_submitted_count, 0) * 1.0 / NULLIF(m.prs_merged_count, 0), 2 ) AS review_to_merge_ratio FROM pr_merges m LEFT JOIN code_reviews r ON m.merged_by = r.reviewer WHERE m.prs_merged_count >= 5 -- Focus on active maintainers ORDER BY m.prs_merged_count DESC, r.reviews_submitted_count DESC LIMIT 100;",
+            "runquantity":468,
+            "executiontime":6
+        }
+    ]
+}
