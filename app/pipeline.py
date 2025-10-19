@@ -178,21 +178,47 @@ def clean_sql(s: str) -> str:
 # --------- LLM Client (OpenAI-compatible) ---------
 class LLM:
     def __init__(self, model: str | None = None, base_url: str | None = None, api_key: str | None = None):
-        from openai import OpenAI
-
-        self.model = model or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-        base = base_url or os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_API_BASE")
-        key = api_key or os.getenv("OPENAI_API_KEY")
-        if not key:
-            raise RuntimeError("OPENAI_API_KEY is required for LLM pipeline")
-        self.client = OpenAI(api_key=key, base_url=base) if base else OpenAI(api_key=key)
+        # Priority: use custom OpenAI-compatible base URL (e.g., https://cloud.m1r0.ru/v1) without requiring API key
+        self.model = model or os.getenv("OPENAI_MODEL", "qwen3-coder:30b")
+        self.base_url = (base_url or os.getenv("OPENAI_BASE_URL") or "").strip()
+        self.api_key = (api_key or os.getenv("OPENAI_API_KEY") or "").strip()
 
     async def acomplete(self, system: str, user: str) -> str:
-        # Use chat.completions for portability
+        # If custom base_url provided, call it directly via httpx without mandatory API key
+        if self.base_url:
+            import httpx
+
+            url = self.base_url.rstrip("/") + "/chat/completions"
+            headers = {"Content-Type": "application/json"}
+            # Send Authorization only if a key is actually provided
+            if self.api_key:
+                headers["Authorization"] = f"Bearer {self.api_key}"
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "temperature": 0,
+            }
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                r = await client.post(url, headers=headers, json=payload)
+                r.raise_for_status()
+                data = r.json()
+                # OpenAI-compatible schema
+                return ((data.get("choices") or [{}])[0].get("message") or {}).get("content", "")
+
+        # Fallback: use official OpenAI SDK only if no base_url and an API key is given
+        from openai import OpenAI
+        key = self.api_key or os.getenv("OPENAI_API_KEY")
+        if not key:
+            raise RuntimeError("No OPENAI_BASE_URL provided and OPENAI_API_KEY is missing")
+        client = OpenAI(api_key=key)
+
         loop = asyncio.get_event_loop()
 
         def _call():
-            resp = self.client.chat.completions.create(
+            resp = client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system},

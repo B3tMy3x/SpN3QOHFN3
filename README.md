@@ -47,9 +47,8 @@ Quick Start
   - `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
 
 Environment (.env)
-- `OPENAI_API_KEY` — required
-- `OPENAI_BASE_URL` — optional (OpenAI‑compatible endpoint, e.g. https://api.openai.com/v1)
-- `OPENAI_MODEL` — optional (default gpt-4o-mini)
+- `OPENAI_BASE_URL` — OpenAI‑compatible endpoint (priority, e.g. https://cloud.m1r0.ru/v1)
+- `OPENAI_MODEL` — model name (default qwen3-coder:30b)
 - `PIPELINE_MAJORITY` — optional (default 0.8)
 - `PIPELINE_PER_BATCH` — optional (default 5)
 - `PIPELINE_TIMEOUT_SEC` — optional (default 1200 = 20 minutes)
@@ -75,6 +74,6 @@ Build and Push (linux/amd64)
   - `docker buildx build --platform linux/amd64 -t docker.io/<namespace>/db-structure-analysis:v0.1.0 -f Dockerfile --push .`
 
 Troubleshooting
-- 500/FAILED early: check LLM creds/endpoint; verify `OPENAI_API_KEY` is passed to container (compose uses `env_file: .env`, `docker run` needs `--env-file .env`).
+- 500/FAILED early: check LLM endpoint; verify `OPENAI_BASE_URL`/`OPENAI_MODEL` are passed to container (`--env-file .env`).
 - Ambiguous or missing catalog.schema: ensure input SQL uses fully qualified names like `<catalog>.<schema>.<table>`.
 - Port not reachable on localhost: ensure `-p 8000:8000` is used or compose service exposes `8000`.
